@@ -2,7 +2,7 @@ const { expect } = require("chai");
 const { ethers } = require("hardhat");
 
 describe("MultiERC721", function () {
-  it("Mint and transfer NFT", async function () {
+  it("Check if balance matches expected and withdraw to owner", async function () {
     const MyNFT = await ethers.getContractFactory("MyNFT");
     const myNFT = await MyNFT.deploy();
     await myNFT.deployed();
@@ -24,7 +24,12 @@ describe("MultiERC721", function () {
     balance = await myNFT.balanceOf(from);
     expect(balance).to.equal(0);
 
-    const balanceOfSM = await myNFT.checkBalanceOfSM();
+    let balanceOfSM = await myNFT.checkBalanceOfSM();
     expect(balanceOfSM).to.equal('66000000000000000');
+
+    const withdraw = await myNFT.withdraw();
+    balanceOfSM = await myNFT.checkBalanceOfSM();
+    expect(balanceOfSM).to.equal('0');
+    
   });
 });

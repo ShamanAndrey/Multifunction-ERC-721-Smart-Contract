@@ -11,9 +11,15 @@ contract MyNFT is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable {
     using Counters for Counters.Counter;
 
     // variable of cost for payToMint function
-    uint256 mintPrice = 0.066 ether;
+    uint256 public mintPrice = 0.066 ether;
     // variable for maximum supply
-    uint256 maxSupply = 10;
+    uint256 public maxSupply = 10;
+    // variable for maximum mints per user
+    uint256 public maxMintAmount = 3;
+    //Mapping of address to bool whitelist
+    mapping(address => bool) public whitelisted;
+    //Mapping of address to int to see if they reached mint limit
+    mapping(address => uint16) public mintlimit;
 
     Counters.Counter private _tokenIdCounter;
 
@@ -62,6 +68,11 @@ contract MyNFT is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable {
         return super.supportsInterface(interfaceId);
     }
 
+    // Change max mint amount
+    function changeMaxMint(uint256 newMaxMint) public onlyOwner {
+        maxMintAmount = newMaxMint;
+    }
+
     // functions mint at set price, change set price and view set price
     function checkPrice() public view returns (uint256) {
         return (mintPrice);
@@ -72,11 +83,17 @@ contract MyNFT is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable {
     }
 
     function payToMint(address to) public payable {
+        require(whitelisted[msg.sender] == true, "user not whitelisted");
+        require(
+            mintlimit[msg.sender] < maxMintAmount,
+            "user minted the maximum amount"
+        );
         require(totalSupply() < maxSupply, "Maximum supply reached");
         require(msg.value >= mintPrice, "Not enough ether");
         uint256 tokenId = _tokenIdCounter.current();
         _tokenIdCounter.increment();
         _mint(to, tokenId);
+        mintlimit[msg.sender] += 1;
     }
 
     //change supply
@@ -86,12 +103,37 @@ contract MyNFT is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable {
 
     //withdraw and check balance of the smart contract
 
-    function checkBalanceOfSM() public view onlyOwner returns (uint256) {
+    function checkBalanceOfSM() public view returns (uint256) {
         return (address(this).balance);
     }
 
     function withdraw() public payable onlyOwner {
         (bool os, ) = payable(owner()).call{value: address(this).balance}("");
         require(os);
+    }
+
+    // Owener Whitelist add and remove
+    function whiteListUser(address _user) public onlyOwner {
+        whitelisted[_user] = true;
+    }
+
+    function removeWhiteListUser(address _user) public onlyOwner {
+        whitelisted[_user] = false;
+    }
+
+    function removeArrayWhiteListUsers(address[] memory list) public onlyOwner {
+        uint256 i = list.length - 1;
+        while (i > 0) {
+            whitelisted[list[i]] = false;
+            i -= 1;
+        }
+    }
+
+    function addArrayWhiteListUsers(address[] memory list) public onlyOwner {
+        uint256 i = list.length - 1;
+        while (i > 0) {
+            whitelisted[list[i]] = true;
+            i -= 1;
+        }
     }
 }
