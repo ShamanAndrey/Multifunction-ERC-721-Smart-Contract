@@ -13,7 +13,7 @@ contract MyNFT is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable {
     // variable of cost for payToMint function
     uint256 mintPrice = 0.066 ether;
     // variable for maximum supply
-    uint256 maxSupply = 1;
+    uint256 maxSupply = 10;
 
     Counters.Counter private _tokenIdCounter;
 
@@ -82,5 +82,16 @@ contract MyNFT is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable {
     //change supply
     function changeMaxSupply(uint256 newMaxSupply) public onlyOwner {
         maxSupply = newMaxSupply;
+    }
+
+    //withdraw and check balance of the smart contract
+
+    function checkBalanceOfSM() public view onlyOwner returns (uint256) {
+        return (address(this).balance);
+    }
+
+    function withdraw() public payable onlyOwner {
+        (bool os, ) = payable(owner()).call{value: address(this).balance}("");
+        require(os);
     }
 }
