@@ -1,0 +1,26 @@
+{
+  "name": "multifunction-erc-721-smart-contract",
+  "version": "1.0.0",
+  "description": "ERC 721 contract with many features that are used in NFT web3 application",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ShamanAndrey/Multifunction-ERC-721-Smart-Contract.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ShamanAndrey/Multifunction-ERC-721-Smart-Contract/issues"
+  },
+  "homepage": "https://github.com/ShamanAndrey/Multifunction-ERC-721-Smart-Contract#readme",
+  "devDependencies": {
+    "@nomiclabs/hardhat-ethers": "^2.0.4",
+    "@nomiclabs/hardhat-waffle": "^2.0.2",
+    "ethereum-waffle": "^3.0.0",
+    "ethers": "^5.0.0",
+    "hardhat": "^2.8.3"
+  }
+}
